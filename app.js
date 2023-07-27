@@ -27,16 +27,15 @@ app.use(bodyParser.urlencoded({
 }));
 
 app.use(session({
-    secret: "Our little secret.",
+    secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: true
 }));
 
 app.use(passport.initialize());
 app.use(passport.session());
 
-mongoose.connect("mongodb://127.0.0.1:27017/userDB", {useNewUrlParser: true});
-// /?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+1.9.1/
+mongoose.connect(process.env.DATABASE_URI, {useNewUrlParser: true});
 
 const userSchema = new mongoose.Schema({
     email: String,
@@ -47,7 +46,6 @@ const userSchema = new mongoose.Schema({
 
 userSchema.plugin(passportLocalMongoose);
 userSchema.plugin(findOrCreate);
-//userSchema.plugin(encrypt, {secret: process.env.SECRET, encryptedFields: ["password"]});
 
 const User = new mongoose.model("User", userSchema);
 
